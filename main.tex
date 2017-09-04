@@ -145,16 +145,16 @@ BulkIO reads uncompressed data 35 times faster than filling a class; LZ4 drops t
 \begin{frame}{View all as scatter plots: top-left is best}
 \vspace{0.5 cm}
 \begin{columns}
-\column{0.4\linewidth}
+\column{0.38\linewidth}
 \mbox{ } \hfill write vs size \hfill \mbox{ }
 
 \includegraphics[width=\linewidth]{write.png}
 \vspace{3 cm}
-\column{0.4\linewidth}
+\column{0.38\linewidth}
 \mbox{ } \hfill read vs size \hfill \mbox{ }
 
 \includegraphics[width=\linewidth]{read.png}
-\column{0.4\linewidth}
+\column{0.38\linewidth}
 \vspace{3 cm}
 
 \mbox{ } \hfill BulkIO vs size \hfill \mbox{ }
@@ -163,10 +163,24 @@ BulkIO reads uncompressed data 35 times faster than filling a class; LZ4 drops t
 \end{columns}
 
 \vspace{-2\baselineskip}
-It's about trade-offs, but the cost of \\ LZMA for BulkIO is very high!
+It's about trade-offs, but the cost of \\ LZMA is very high for BulkIO!
 \end{frame}
 
+\begin{frame}{File size savings of normal form: 8--18\%}
+\begin{center}
+\includegraphics[width=\linewidth]{avoiding-duplication.png}
+\end{center}
 
+Because LZ4 is the worst compression algorithm for file size, it has the most to gain by not duplicating the particle count data.
+\end{frame}
 
+\begin{frame}{File size again, now in normal form}
+\begin{center}
+\includegraphics[width=\linewidth]{final-size.png}
+\end{center}
+
+Final ratio: LZ4 level 4 is only 1.5$\times$ bigger than LZMA level 4.
+\vspace{\baselineskip}
+\end{frame}
 
 \end{document}
