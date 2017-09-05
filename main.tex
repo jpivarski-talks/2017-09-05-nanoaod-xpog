@@ -217,7 +217,7 @@ All LZ4 levels have no overhead relative to reading data into a class generated 
 \includegraphics[width=\linewidth]{bulk-vs-compression.png}
 \end{center}
 
-BulkIO reads uncompressed data 35 times faster than filling a class; LZ4 reduces this to 17 times. LZ4 is 50 times faster than LZMA.
+BulkIO reads uncompressed data 35 times faster than filling a class; LZ4 reduces this to 17 times. LZ4 is 50 times faster than LZMA!
 \end{frame}
 
 \begin{frame}{View all as scatter plots: top-left is best}
@@ -246,7 +246,7 @@ It's about trade-offs, but the cost of \\ LZMA is very high for BulkIO!
 
 \begin{frame}{Wasted space: TBranches with counters}
 \vspace{0.5 cm}
-If you want to save, e.g., arbitrarily many muons per event, you can save all the muon attributes without event boundaries and a count of the muons per event.
+\textcolor{darkblue}{Scenario:} you want to save, e.g., arbitrarily many muons per event, so you save all the muon attributes without event boundaries and a count of the muons per event.
 
 \vspace{0.5 cm}
 \uncover<2->{ROOT does this, but it {\it also} stores indexes of the event boundaries {\it for each attribute.} This is the same data in integrated form, repeated for all attributes. Especially wasteful for rare particles with many attributes.}
@@ -297,7 +297,7 @@ Would we want to provide a library to facilitate this? Would that undermine the 
 Because LZ4 is the worst compression algorithm for file size, it has the most to gain by not duplicating the particle count data.
 \end{frame}
 
-\begin{frame}{File size again, now in normal form}
+\begin{frame}{Total file size, now in normal form}
 \begin{center}
 \includegraphics[width=\linewidth]{final-size.png}
 \end{center}
