@@ -145,8 +145,8 @@ List(
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{First: can I read it?}
-(JIT-compiled) Python code runs on these data at MHz rates\footnote{See \href{https://arxiv.org/abs/1708.08319}{\textcolor{blue}{arXiv:1708.08319}}.}.
+\begin{frame}[fragile]{Next: can I use it?}
+Numba-compiled Python code runs on these data at MHz rates\footnote{See \href{https://arxiv.org/abs/1708.08319}{\textcolor{blue}{arXiv:1708.08319}}.}.
 
 \begin{columns}
 \column{1.1\linewidth}
@@ -245,6 +245,51 @@ BulkIO reads uncompressed data 35 times faster than filling a class; LZ4 drops t
 It's about trade-offs, but the cost of \\ LZMA is very high for BulkIO!
 \end{frame}
 
+\begin{frame}{Wasted space: TBranches with counters}
+\vspace{0.5 cm}
+If you want to save, e.g., arbitrarily many muons per event, you can save all the muon attributes without event boundaries and a count of the muons per event.
+
+\vspace{0.5 cm}
+\uncover<2->{ROOT does this, but it {\it also} stores indexes of the event boundaries {\it for each attribute.} Especially wasteful for rare particles with many attributes.}
+
+\vspace{0.5 cm}
+\uncover<3->{This is true for manually split objects (as in NanoAOD) and automatically split objects (e.g.\ TClonesArray of class instances).}
+
+\vspace{0.5 cm}
+\uncover<4->{Before compression, it accounts for 10\% of NanoAOD. Can only avoid it by putting each particle type in a different TTree. Roughly corresponds to ``normal form'' in SQL.}
+\end{frame}
+
+\begin{frame}[fragile]{Working with particles in normal form}
+\vspace{0.5 cm}
+Awkward to work with data this way in ROOT:
+
+\vspace{0.25 cm}
+\scriptsize
+\begin{minted}{c++}
+muoni = 0;
+for (i = 0;  i < eventTree->GetEntries();  i++) {
+    eventTree->GetEntry(i);      // loads nMuon
+
+    for (j = muoni;  j < muoni + nMuon;  j++) {
+        muonTree->GetEntry(j);  // loads data for one muon
+        // do something with this muon
+        ...
+
+    }
+    muoni += nMuon;
+
+    // similarly for other particles...
+}
+\end{minted}
+
+\vspace{0.25 cm}
+\normalsize
+Would we want to provide a library to facilitate this? Would that undermine the ``bare ROOT'' NanoAOD goal?
+
+\vspace{0.25 cm}
+\textcolor{gray}{(It's no problem for accessing the data in Python, Spark, etc.)}
+\end{frame}
+
 \begin{frame}{File size savings of normal form: 8--18\%}
 \begin{center}
 \includegraphics[width=\linewidth]{avoiding-duplication.png}
@@ -258,8 +303,25 @@ Because LZ4 is the worst compression algorithm for file size, it has the most to
 \includegraphics[width=\linewidth]{final-size.png}
 \end{center}
 
-Final ratio: LZ4 level 4 is only 1.5$\times$ bigger than LZMA level 4.
-\vspace{\baselineskip}
+Final ratio: LZ4 level 4 is only 1.5$\times$ bigger than LZMA level 4. \\
+Much of the gap between LZ4 and LZMA was this wasted space\ldots
+\end{frame}
+
+\begin{frame}{Conclusions}
+\vspace{0.5 cm}
+
+\textcolor{darkblue}{Several technologies converging:}
+\begin{itemize}\setlength{\itemsep}{0.25 cm}
+\item LZ4 compression algorithm is about 50$\times$ faster than LZMA;
+\item BulkIO is 35$\times$ faster than filling class objects;
+\item Numpy is a good format for exposing BulkIO to Python;
+\item Numba compiles Python code to restructure the data for other libraries (Pandas, PySpark, machine learning\ldots);
+\end{itemize}
+
+\vspace{1 cm}
+\begin{itemize}
+\item<2-> \ldots and NanoAOD can be the first data format published centrally by an experiment that is directly usable in these analysis tools, without intermediaries.
+\end{itemize}
 \end{frame}
 
 \end{document}
